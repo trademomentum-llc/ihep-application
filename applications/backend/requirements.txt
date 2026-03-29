@@ -30,12 +30,12 @@ google-cloud-kms==3.7.0
 google-cloud-secret-manager==2.25.0
 
 # Security & Cryptography
-cryptography==46.0.3
+cryptography==46.0.6
 bcrypt==4.2.1
 filelock>=3.20.3  # Pinned for CVE-2025-68146 + CVE-2026-22701 fix (TOCTOU symlink vulnerability)
 
 # HTTP Requests
-requests==2.32.5
+requests==2.33.0
 urllib3>=2.6.3  # Pinned for CVE-2025-66418 (decompression chain DoS), CVE-2025-66471 (streaming DoS), CVE-2026-21441 (redirect bypass)
 
 # Data Validation & Serialization
