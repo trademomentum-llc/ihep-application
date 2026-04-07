@@ -16,7 +16,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,md}\""
   },
   "dependencies": {
-    "next": "16.1.5",
+    "next": "16.1.7",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "three": "^0.162.0",
