@@ -23,26 +23,26 @@ hiredis==3.0.0  # C-based parser for performance
 psycopg2-binary==2.9.10
 
 # Google Cloud Platform
-google-cloud-aiplatform==1.77.0
+google-cloud-aiplatform==1.133.0
 google-cloud-logging==3.11.3
 google-cloud-storage==2.19.0
 google-cloud-kms==3.7.0
 google-cloud-secret-manager==2.25.0
 
 # Security & Cryptography
-cryptography==46.0.3
+cryptography==46.0.7
 bcrypt==4.2.1
 filelock>=3.20.3  # Patched CVE-2026-22701 (SoftFileLock TOCTOU)
 
 # HTTP Requests
-requests==2.32.5
+requests==2.33.0
 urllib3>=2.6.3  # Pinned for CVE-2025-66418 (decompression chain DoS), CVE-2025-66471 (streaming DoS), CVE-2026-21441 (redirect bypass)
 
 # Data Validation & Serialization
 marshmallow>=4.1.2  # Pinned for CVE-2025-68480 fix (DoS in Schema.load)
 
 # Environment Variables
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 
 # Utilities
 python-dateutil==2.9.0.post0
@@ -58,13 +58,13 @@ flask-cors==6.0.1
 py-healthcheck==1.10.1
 
 # Testing (Development)
-pytest==8.3.4
+pytest==9.0.3
 pytest-cov==6.0.0
 pytest-mock==3.14.0
 httpx==0.28.1  # For async HTTP testing
 
 # Code Quality (Development)
-black==25.12.0
+black==26.3.1
 flake8==7.1.1
 mypy==1.13.0
 pylint==3.3.2
