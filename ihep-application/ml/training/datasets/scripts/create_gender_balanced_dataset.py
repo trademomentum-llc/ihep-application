@@ -96,6 +96,27 @@ def swap_gender_in_data(data: Dict[str, Any]) -> Dict[str, Any]:
     else:
         return data
 
+def redact_sensitive_fields(data: Any) -> Any:
+    """Recursively redact common sensitive fields before persisting data."""
+    sensitive_keys = {
+        "password", "pass", "passwd", "secret", "token", "api_key", "apikey",
+        "access_token", "refresh_token", "authorization", "auth",
+        "ssn", "social_security", "credit_card", "card_number", "cvv",
+        "email", "phone", "address"
+    }
+
+    if isinstance(data, dict):
+        sanitized = {}
+        for key, value in data.items():
+            if str(key).lower() in sensitive_keys:
+                sanitized[key] = "[REDACTED]"
+            else:
+                sanitized[key] = redact_sensitive_fields(value)
+        return sanitized
+    if isinstance(data, list):
+        return [redact_sensitive_fields(item) for item in data]
+    return data
+
 def is_male_dominant(data: Dict) -> bool:
     """Check if example is male-dominant."""
     text = json.dumps(data).lower()
@@ -137,7 +158,8 @@ def process_file(input_file: Path, output_file: Path) -> Tuple[int, int]:
                     data = json.loads(line)
 
                     # Write original
-                    outfile.write(json.dumps(data, ensure_ascii=False) + '\n')
+                    safe_data = redact_sensitive_fields(data)
+                    outfile.write(json.dumps(safe_data, ensure_ascii=False) + '\n')
                     original_count += 1
 
                     # If male-dominant, create female version
@@ -153,7 +175,8 @@ def process_file(input_file: Path, output_file: Path) -> Tuple[int, int]:
                             female_data['metadata']['gender_balanced'] = True
                             female_data['metadata']['source'] = 'synthetic_balanced'
 
-                        outfile.write(json.dumps(female_data, ensure_ascii=False) + '\n')
+                        safe_female_data = redact_sensitive_fields(female_data)
+                        outfile.write(json.dumps(safe_female_data, ensure_ascii=False) + '\n')
                         added_count += 1
 
                 except json.JSONDecodeError as e:
