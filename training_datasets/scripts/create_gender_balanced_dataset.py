@@ -9,6 +9,33 @@ import re
 from pathlib import Path
 from typing import Dict, Any, List, Tuple
 
+SENSITIVE_FIELD_NAMES = {
+    "password", "pass", "passwd", "pwd",
+    "token", "access_token", "refresh_token", "api_key", "apikey",
+    "secret", "client_secret",
+    "ssn", "social_security_number",
+    "email", "phone", "mobile",
+    "address", "dob", "date_of_birth",
+    "credit_card", "card_number", "cvv"
+}
+
+
+def redact_sensitive_fields(data: Any) -> Any:
+    """
+    Recursively redact values for commonly sensitive keys before persistence.
+    """
+    if isinstance(data, dict):
+        redacted = {}
+        for key, value in data.items():
+            if isinstance(key, str) and key.lower() in SENSITIVE_FIELD_NAMES:
+                redacted[key] = "[REDACTED]"
+            else:
+                redacted[key] = redact_sensitive_fields(value)
+        return redacted
+    elif isinstance(data, list):
+        return [redact_sensitive_fields(item) for item in data]
+    return data
+
 # Gender term mappings (case-insensitive replacement)
 GENDER_MAPPINGS = [
     # Pronouns
@@ -153,7 +180,8 @@ def process_file(input_file: Path, output_file: Path) -> Tuple[int, int]:
                             female_data['metadata']['gender_balanced'] = True
                             female_data['metadata']['source'] = 'synthetic_balanced'
 
-                        outfile.write(json.dumps(female_data, ensure_ascii=False) + '\n')
+                        redacted_female_data = redact_sensitive_fields(female_data)
+                        outfile.write(json.dumps(redacted_female_data, ensure_ascii=False) + '\n')
                         added_count += 1
 
                 except json.JSONDecodeError as e:
