@@ -417,7 +417,7 @@ class EpicAdapter(BaseEHRAdapter):
                 # Rate limited
                 self._status = ConnectionStatus.RATE_LIMITED
                 retry_after = response.headers.get("Retry-After", 60)
-                logger.warning(f"Epic rate limited, retry after {retry_after}s")
+                logger.warning"Epic rate limited by upstream FHIR API")
                 return None
 
             if response.status_code == 401:
