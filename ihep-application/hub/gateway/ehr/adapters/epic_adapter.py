@@ -427,7 +427,12 @@ class EpicAdapter(BaseEHRAdapter):
                 return None
 
             if response.status_code >= 400:
-                logger.error(f"Epic FHIR request failed: {response.status_code} - {response.text}")
+                logger.error(
+                    "Epic FHIR request failed: status=%s path=%s response_length=%s",
+                    response.status_code,
+                    path,
+                    len(response.text) if response.text is not None else 0,
+                )
                 return None
 
             if response.status_code == 204:
