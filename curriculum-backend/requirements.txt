@@ -3,7 +3,7 @@
 # Core Framework
 fastapi>=0.115.3
 uvicorn[standard]==0.27.0
-pydantic==2.5.3
+pydantic==2.10.3
 pydantic-settings==2.15.0
 
 # Database
@@ -62,5 +62,5 @@ prometheus-client==0.19.0
 sentry-sdk>=1.45.1
 
 # Documentation
-mkdocs==1.5.3
+mkdocs==1.6.1
 mkdocs-material==9.7.7

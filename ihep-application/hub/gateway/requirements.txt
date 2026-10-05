@@ -71,7 +71,7 @@ pylint==3.3.2
 
 # Security Scanning (Development)
 bandit==1.8.0
-safety==3.2.11
+safety==3.7.0
 
 # ML Training Dependencies (for MedGemma fine-tuning)
 torch>=2.10.0  # Floor raised for GHSA-63cw-57p8-fm3p (CVE-2026-24747, high, fixed 2.10.0); also covers CVE-2025-32434, CVE-2024-31580, CVE-2024-31583
