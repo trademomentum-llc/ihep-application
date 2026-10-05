@@ -30,7 +30,7 @@ google-cloud-kms==3.7.0
 google-cloud-secret-manager==2.25.0
 
 # Security & Cryptography
-cryptography==46.0.3
+cryptography==50.0.0
 bcrypt==4.2.1
 filelock>=3.20.3  # Patched CVE-2026-22701 (SoftFileLock TOCTOU)
 
