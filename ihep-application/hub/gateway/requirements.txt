@@ -74,7 +74,7 @@ bandit==1.8.0
 safety==3.2.11
 
 # ML Training Dependencies (for MedGemma fine-tuning)
-torch>=2.8.0  # Pinned for CVE-2025-32434 (RCE), CVE-2024-31580 (heap overflow), CVE-2024-31583 (use-after-free)
+torch>=2.10.0  # Floor raised for GHSA-63cw-57p8-fm3p (CVE-2026-24747, high, fixed 2.10.0); also covers CVE-2025-32434, CVE-2024-31580, CVE-2024-31583
 transformers==5.10.1  # Pinned for CVE-2024-11392/11393/11394 (deserialization RCE) and ReDoS fixes
 datasets>=2.16.0
 accelerate>=0.25.0
