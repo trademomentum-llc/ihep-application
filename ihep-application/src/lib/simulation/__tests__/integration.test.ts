@@ -3,8 +3,9 @@
  * Tests EKF + CBF + Controller working together
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
+// @vitest-environment node
+import { describe, it } from 'vitest';
+import assert from 'node:assert/strict';
 import { dynamics, initEKF, ekfStep } from '../ekf';
 import { cbfAdjust, isSafe } from '../cbf';
 import type { RobotState, Obstacle, Target } from '../types';
@@ -89,7 +90,7 @@ describe('Integration Tests', () => {
       const eps = 20; // Larger safety margin
 
       // Start position
-      let state: RobotState = {
+      const state: RobotState = {
         p: { x: 50, y: 100 },
         v: { x: 0, y: 0 },
       };
@@ -150,7 +151,7 @@ describe('Integration Tests', () => {
       const eps = 20;
 
       // Start on one side, target offset vertically to encourage navigation
-      let state: RobotState = {
+      const state: RobotState = {
         p: { x: 100, y: 90 },
         v: { x: 0, y: 0 },
       };
@@ -158,7 +159,7 @@ describe('Integration Tests', () => {
       const target = { x: 200, y: 110 };
 
       const dt = 1 / 60;
-      let trajectory: { x: number; y: number }[] = [];
+      const trajectory: { x: number; y: number }[] = [];
       let safetyViolations = 0;
 
       for (let i = 0; i < 1000; i++) {
@@ -219,7 +220,7 @@ describe('Integration Tests', () => {
   describe('Full System Integration (EKF + CBF + Control)', () => {
     it('should control robot with state estimation and safety', () => {
       // True state
-      let trueState: RobotState = {
+      const trueState: RobotState = {
         p: { x: 50, y: 50 },
         v: { x: 0, y: 0 },
       };
@@ -311,7 +312,7 @@ describe('Integration Tests', () => {
     });
 
     it('should handle biased measurements with EKF', () => {
-      let trueState: RobotState = {
+      const trueState: RobotState = {
         p: { x: 100, y: 100 },
         v: { x: 5, y: 0 },
       };
@@ -356,7 +357,7 @@ describe('Integration Tests', () => {
     it('should complete simulation in reasonable time', () => {
       const startTime = Date.now();
 
-      let state: RobotState = {
+      const state: RobotState = {
         p: { x: 0, y: 0 },
         v: { x: 0, y: 0 },
       };

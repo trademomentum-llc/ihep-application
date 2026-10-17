@@ -14,6 +14,9 @@ import { randomBytes } from '@stablelib/random'
 import { KyberKEM, KyberSecurityLevel, type KyberKeyPair } from './pqc-kyber'
 import { SHA512 } from '@stablelib/sha512'
 
+/** RFC 5869 default salt (HashLen zero bytes for SHA-512); sender and recipient must derive the same DEK. */
+const HKDF_ZERO_SALT = new Uint8Array(64)
+
 /**
  * Encrypted data structure
  */
@@ -51,13 +54,13 @@ export interface DecryptedData {
  * Hybrid Encryption System
  *
  * Encryption flow:
- * 1. Generate random Data Encryption Key (DEK) - 256 bits
- * 2. Encrypt plaintext with XChaCha20-Poly1305 using DEK
- * 3. Encapsulate DEK using Kyber KEM
+ * 1. Kyber KEM encapsulation yields a fresh shared secret
+ * 2. Derive the 256-bit Data Encryption Key (DEK) from it via HKDF
+ * 3. Encrypt plaintext with XChaCha20-Poly1305 using DEK
  * 4. Store: {ciphertext, kyber_ciphertext, nonce, metadata}
  *
  * Decryption flow:
- * 1. Decapsulate DEK using Kyber secret key
+ * 1. Decapsulate the shared secret with the Kyber secret key and re-derive the DEK
  * 2. Decrypt ciphertext with XChaCha20-Poly1305 using recovered DEK
  * 3. Verify metadata integrity
  */
@@ -86,29 +89,24 @@ export class HybridEncryption {
     // Convert plaintext to bytes
     const plaintextBytes = typeof plaintext === 'string' ? new TextEncoder().encode(plaintext) : plaintext
 
-    // Step 1: Generate random DEK (32 bytes for XChaCha20-Poly1305)
-    const dek = randomBytes(32)
-
-    // Step 2: Encrypt plaintext with XChaCha20-Poly1305
-    const nonce = randomBytes(24) // XChaCha20 uses 24-byte nonce
-    const cipher = new XChaCha20Poly1305(dek)
-    const ciphertext = cipher.seal(nonce, plaintextBytes)
-
-    // Step 3: Encapsulate DEK with Kyber
+    // Step 1: Encapsulate with Kyber to get a fresh per-message shared secret
     const { ciphertext: kyberCiphertext, sharedSecret } = await this.kyberKEM.encapsulate(recipientPublicKey)
 
-    // Derive encryption key for DEK from Kyber shared secret
-    const dekEncryptionKey = await this.kyberKEM.deriveKey(
+    // Step 2: Derive the data-encryption key from the shared secret (KEM-DEM).
+    // Previously a random DEK encrypted the data and was "wrapped", but the
+    // wrapped DEK was never stored, so decrypt() (which uses this derived key)
+    // could never open the ciphertext.
+    const dek = await this.kyberKEM.deriveKey(
       sharedSecret,
-      undefined,
+      HKDF_ZERO_SALT, // must be deterministic: deriveKey() salts randomly when omitted
       new TextEncoder().encode('IHEP-DEK-Wrapping-v1'),
       32
     )
 
-    // Wrap DEK with derived key
-    const dekNonce = randomBytes(24)
-    const dekCipher = new XChaCha20Poly1305(dekEncryptionKey)
-    const wrappedDEK = dekCipher.seal(dekNonce, dek)
+    // Step 3: Encrypt plaintext with XChaCha20-Poly1305
+    const nonce = randomBytes(24) // XChaCha20 uses 24-byte nonce
+    const cipher = new XChaCha20Poly1305(dek)
+    const ciphertext = cipher.seal(nonce, plaintextBytes)
 
     // Step 4: Create metadata and compute hash
     const timestamp = Date.now()
@@ -160,7 +158,7 @@ export class HybridEncryption {
     // Derive DEK decryption key
     const dekEncryptionKey = await this.kyberKEM.deriveKey(
       sharedSecret,
-      undefined,
+      HKDF_ZERO_SALT, // must be deterministic: deriveKey() salts randomly when omitted
       new TextEncoder().encode('IHEP-DEK-Wrapping-v1'),
       32
     )
