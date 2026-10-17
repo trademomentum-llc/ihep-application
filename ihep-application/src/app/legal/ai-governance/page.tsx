@@ -52,7 +52,7 @@ export default function AIGovernancePolicyPage() {
       <ul>
         <li>Conduct Ethical Impact Assessments (EIA) for all new models</li>
         <li>Review fairness and bias testing results</li>
-        <li>Adjudicate "Go/No-Go" decisions for model deployment based on safety criteria</li>
+        <li>Adjudicate &quot;Go/No-Go&quot; decisions for model deployment based on safety criteria</li>
       </ul>
 
       <h3>1.3 Technical Review Board (TRB)</h3>
@@ -85,7 +85,7 @@ export default function AIGovernancePolicyPage() {
       </ul>
       <p><strong>Algorithm Selection:</strong></p>
       <ul>
-        <li>"Black box" models prohibited for clinical decision support unless accompanied by robust explainability</li>
+        <li>&quot;Black box&quot; models prohibited for clinical decision support unless accompanied by robust explainability</li>
       </ul>
 
       <h3>Phase III: Validation & Verification (V&V)</h3>
@@ -184,12 +184,12 @@ export default function AIGovernancePolicyPage() {
       <div className="bg-red-50 border border-red-200 rounded-md p-4 my-4">
         <p className="font-bold text-red-800">Adverse Events Protocol:</p>
         <p className="text-sm mt-2">
-          Any patient harm or "near miss" attributed to an AI system must be reported immediately as a Level 1 Incident.
+          Any patient harm or &quot;near miss&quot; attributed to an AI system must be reported immediately as a Level 1 Incident.
         </p>
         <p className="text-sm mt-2"><strong>Response Protocol:</strong></p>
         <ol className="text-sm mt-2 ml-4">
           <li>1. Immediate suspension of the affected AI model</li>
-          <li>2. Activation of "Standard of Care" fallback protocols</li>
+          <li>2. Activation of &quot;Standard of Care&quot; fallback protocols</li>
           <li>3. Root Cause Analysis (RCA) by TRB and AIESC</li>
           <li>4. Report to regulatory bodies (FDA, OCR) if required</li>
         </ol>

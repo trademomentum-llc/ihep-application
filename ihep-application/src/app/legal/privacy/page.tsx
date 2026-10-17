@@ -228,7 +228,7 @@ export default function PrivacyPolicyPage() {
       </p>
       <p className="font-bold mt-2">Account deletion is permanent and cannot be undone.</p>
 
-      <h2>6. Children's Privacy</h2>
+      <h2>6. Children&apos;s Privacy</h2>
       <p>
         IHEP is not intended for children under 18 without parental consent. We do not knowingly collect
         information from children except with verifiable parental consent.

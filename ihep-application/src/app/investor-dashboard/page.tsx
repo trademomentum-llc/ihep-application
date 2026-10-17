@@ -107,16 +107,15 @@ export default function InvestorDashboardPage() {
   );
 
   const incomeTable = useMemo(() => {
-    let totalParticipants = 0;
     const rows = incomeStreams.map((stream) => {
       const participants = stream.participants[yearIndex];
-      totalParticipants += participants;
       return {
         name: stream.name,
         participants,
         amount: stream.data[yearIndex],
       };
     });
+    const totalParticipants = rows.reduce((sum, row) => sum + row.participants, 0);
     const totalAmount = financialData.direct_income_totals[yearIndex];
     return { rows, totalParticipants, totalAmount };
   }, [yearIndex]);

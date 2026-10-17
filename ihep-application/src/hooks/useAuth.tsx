@@ -24,14 +24,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
 
   // Fetch current user
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<{ authenticated?: boolean; user?: User | null }>({
     queryKey: ['/api/auth/user'],
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: true,
   });
 
-  const isAuthenticated = (data as any)?.authenticated || false;
-  const user = (data as any)?.user || null;
+  const isAuthenticated = data?.authenticated || false;
+  const user = data?.user || null;
 
   // Login mutation
   const loginMutation = useMutation({

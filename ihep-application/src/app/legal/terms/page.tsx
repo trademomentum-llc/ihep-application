@@ -17,8 +17,8 @@ export default function TermsOfServicePage() {
 
       <h2>1. Agreement to Terms</h2>
       <p>
-        By creating an account with the Integrated Health Empowerment Program ("IHEP," "we," "us," or "our"),
-        you ("Member," "you," or "your") agree to be bound by these Terms and Conditions of Membership ("Terms").
+        By creating an account with the Integrated Health Empowerment Program (&quot;IHEP,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;),
+        you (&quot;Member,&quot; &quot;you,&quot; or &quot;your&quot;) agree to be bound by these Terms and Conditions of Membership (&quot;Terms&quot;).
         If you do not agree to these Terms, you may not access or use the IHEP platform.
       </p>
       <p>
@@ -143,7 +143,7 @@ export default function TermsOfServicePage() {
 
       <h3>7.2 No Warranty</h3>
       <p>
-        THE PLATFORM IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+        THE PLATFORM IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED.
       </p>
 
       <h2>8. Contact Information</h2>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface HealthChartProps {
   title: string
-  data?: any[]
+  data?: unknown[]
   height?: number
 }
 

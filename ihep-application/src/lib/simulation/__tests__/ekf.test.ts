@@ -2,8 +2,9 @@
  * Unit tests for Extended Kalman Filter
  */
 
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
+// @vitest-environment node
+import { describe, it } from 'vitest';
+import assert from 'node:assert/strict';
 import { dynamics, F_jac, H_meas, Q, R, ekfStep, initEKF } from '../ekf';
 
 describe('Extended Kalman Filter', () => {

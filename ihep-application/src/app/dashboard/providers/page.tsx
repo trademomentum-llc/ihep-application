@@ -8,6 +8,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { Search, MapPin, Star, Calendar, Phone, Mail, CheckCircle2 } from 'lucide-react'
 
+/** Shape returned by /api/providers/list (fields used here). */
+type ApiProvider = {
+  id: string
+  firstName: string
+  lastName: string
+  title: string
+  specialty: string
+  rating?: number
+  reviewCount?: number
+  acceptingNewPatients?: boolean
+  languages?: string[]
+  location?: { facilityName?: string }
+  bio?: string
+}
+
 type ProviderCard = {
   id: string
   name: string
@@ -38,7 +53,7 @@ export default function ProvidersPage() {
         const res = await fetch('/api/providers/list', { cache: 'no-store' })
         if (!res.ok) throw new Error('Failed to load providers')
         const data = await res.json()
-        const mapped: ProviderCard[] = data.providers.map((p: any) => ({
+        const mapped: ProviderCard[] = (data.providers as ApiProvider[]).map((p) => ({
           id: p.id,
           name: `${p.firstName} ${p.lastName}`,
           title: p.title,

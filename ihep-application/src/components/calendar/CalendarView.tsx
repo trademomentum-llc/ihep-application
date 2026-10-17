@@ -35,15 +35,8 @@ export function CalendarView() {
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  useEffect(() => {
-    if (user) {
-      loadCalendarData();
-    }
-  }, [user]);
-
-  const loadCalendarData = async () => {
-    setLoading(true);
-    setError(null);
+  // Initial load: state already starts as loading/no-error.
+  const fetchCalendarData = async () => {
     
     try {
       // Load appointments
@@ -71,6 +64,26 @@ export function CalendarView() {
       setLoading(false);
     }
   };
+
+  // User-triggered reload: show the spinner and clear stale errors first.
+  const loadCalendarData = async () => {
+    setLoading(true);
+    setError(null);
+    await fetchCalendarData();
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    // Start the fetch from a microtask so no setState runs synchronously in
+    // the effect body (react-hooks/set-state-in-effect).
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) void fetchCalendarData();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -177,7 +190,7 @@ export function CalendarView() {
             </button>
           </div>
         ) : (
-          todayEvents.map((event: any) => (
+          todayEvents.map((event) => (
             <div 
               key={event.id} 
               className="border rounded-lg p-4 hover:shadow-md transition-shadow"

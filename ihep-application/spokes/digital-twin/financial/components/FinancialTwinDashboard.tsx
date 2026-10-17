@@ -335,13 +335,16 @@ export const FinancialTwinDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'income' | 'opportunities' | 'benefits'>('overview');
 
+  // Depend on the primitive id so the React Compiler can preserve memoization.
+  const userId = user?.id;
+
   // Fetch financial twin data
   const fetchFinancialTwin = useCallback(async () => {
-    if (!user?.id || !token) return;
+    if (!userId || !token) return;
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/financial-twin/participant/${user.id}/financial-twin`,
+        `${API_BASE_URL}/api/financial-twin/participant/${userId}/financial-twin`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -359,15 +362,15 @@ export const FinancialTwinDashboard: React.FC = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
-  }, [user?.id, token]);
+  }, [userId, token]);
 
   // Fetch matched opportunities
   const fetchOpportunities = useCallback(async () => {
-    if (!user?.id || !token) return;
+    if (!userId || !token) return;
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/financial-twin/participant/${user.id}/opportunities?limit=6`,
+        `${API_BASE_URL}/api/financial-twin/participant/${userId}/opportunities?limit=6`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -383,15 +386,15 @@ export const FinancialTwinDashboard: React.FC = () => {
     } catch (err) {
       console.error('Failed to fetch opportunities:', err);
     }
-  }, [user?.id, token]);
+  }, [userId, token]);
 
   // Fetch eligible benefits
   const fetchBenefits = useCallback(async () => {
-    if (!user?.id || !token) return;
+    if (!userId || !token) return;
 
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/financial-twin/participant/${user.id}/benefits-eligibility`,
+        `${API_BASE_URL}/api/financial-twin/participant/${userId}/benefits-eligibility`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -409,7 +412,7 @@ export const FinancialTwinDashboard: React.FC = () => {
     } catch (err) {
       console.error('Failed to fetch benefits:', err);
     }
-  }, [user?.id, token]);
+  }, [userId, token]);
 
   // Initial data fetch
   useEffect(() => {

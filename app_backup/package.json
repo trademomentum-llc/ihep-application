@@ -35,5 +35,9 @@
     "url": "https://github.com/ihep-platform/ihep-application"
   },
   "license": "PROPRIETARY",
-  "author": "IHEP Foundation"
+  "author": "IHEP Foundation",
+  "overrides": {
+    "lodash": "4.18.1",
+    "shell-quote": "1.12.0"
+  }
 }

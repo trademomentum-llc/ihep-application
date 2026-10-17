@@ -1,11 +1,27 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   output: 'standalone',
+
+  // Pin the project root: the parent applications/ dir has its own lockfile,
+  // which otherwise makes Next pick the wrong workspace root.
+  outputFileTracingRoot: __dirname,
+
+  // Next.js 16 builds with Turbopack by default. Mirror the webpack
+  // client-side fallbacks below so both bundlers resolve the same way.
+  turbopack: {
+    root: __dirname,
+    resolveAlias: {
+      fs: { browser: './src/lib/empty-module.js' },
+      net: { browser: './src/lib/empty-module.js' },
+      tls: { browser: './src/lib/empty-module.js' },
+    },
+  },
   
   images: {
-    domains: ['storage.googleapis.com'],
+    remotePatterns: [{ protocol: 'https', hostname: 'storage.googleapis.com' }],
     formats: ['image/avif', 'image/webp'],
   },
 
@@ -67,6 +83,7 @@ const nextConfig = {
     ];
   },
 
+  // Used only with `next build --webpack`.
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {

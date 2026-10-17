@@ -109,11 +109,15 @@ const Carousel = React.forwardRef<
         return
       }
 
-      onSelect(api)
+      // Sync initial scroll state on the next frame rather than synchronously
+      // inside the effect (react-hooks/set-state-in-effect).
+      const frame = requestAnimationFrame(() => onSelect(api))
       api.on("reInit", onSelect)
       api.on("select", onSelect)
 
       return () => {
+        cancelAnimationFrame(frame)
+        api?.off("reInit", onSelect)
         api?.off("select", onSelect)
       }
     }, [api, onSelect])
