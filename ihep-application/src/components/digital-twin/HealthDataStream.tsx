@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Activity } from 'lucide-react'
 
@@ -10,11 +11,12 @@ interface HealthDataPoint {
 }
 
 export function HealthDataStream() {
-  const mockData: HealthDataPoint[] = [
+  // Lazy initializer: timestamps are captured once, not on every render.
+  const [mockData] = useState<HealthDataPoint[]>(() => [
     { timestamp: new Date(), type: 'Heart Rate', value: '72 bpm' },
     { timestamp: new Date(Date.now() - 60000), type: 'Blood Pressure', value: '120/80 mmHg' },
     { timestamp: new Date(Date.now() - 120000), type: 'Steps', value: '8,432' },
-  ]
+  ])
 
   return (
     <Card className="apple-card">

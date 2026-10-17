@@ -21,11 +21,9 @@ export function useHealthData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const refreshMetrics = async () => {
+  // Initial load: state already starts as loading/no-error.
+  const fetchMetrics = async () => {
     if (!user) return;
-    
-    setLoading(true);
-    setError(null);
     
     try {
       const response = await fetch('/api/health/metrics', {
@@ -47,10 +45,25 @@ export function useHealthData() {
     }
   };
 
+  // User-triggered reload: show the spinner and clear stale errors first.
+  const refreshMetrics = async () => {
+    if (!user) return;
+    setLoading(true);
+    setError(null);
+    await fetchMetrics();
+  };
+
   useEffect(() => {
-    if (user) {
-      refreshMetrics();
-    }
+    if (!user) return;
+    // Start the fetch from a microtask so no setState runs synchronously in
+    // the effect body (react-hooks/set-state-in-effect).
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) void fetchMetrics();
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   return { metrics, loading, error, refreshMetrics };

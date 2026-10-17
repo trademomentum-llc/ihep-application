@@ -34,6 +34,13 @@ interface ChatMessage {
   timestamp: Date
 }
 
+
+/** Deterministic pseudo-random value in [0, 1) for purely decorative layout. Pure, so render stays idempotent and SSR/CSR markup matches. */
+function decorativeNoise(index: number, salt: number): number {
+  const x = Math.sin(index * 12.9898 + salt * 78.233) * 43758.5453
+  return x - Math.floor(x)
+}
+
 export default function DigitalTwinPage() {
   const [selectedSystem, setSelectedSystem] = useState<string | null>(null)
   const [showChat, setShowChat] = useState(false)
@@ -294,9 +301,9 @@ export default function DigitalTwinPage() {
                     key={i}
                     className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
                     style={{
-                      left: `${10 + Math.random() * 80}%`,
-                      top: `${10 + Math.random() * 80}%`,
-                      animationDelay: `${Math.random() * 2}s`,
+                      left: `${10 + decorativeNoise(i, 1) * 80}%`,
+                      top: `${10 + decorativeNoise(i, 2) * 80}%`,
+                      animationDelay: `${decorativeNoise(i, 3) * 2}s`,
                     }}
                   ></div>
                 ))}
@@ -378,7 +385,7 @@ export default function DigitalTwinPage() {
                     <div>
                       <h4 className="font-medium text-blue-900">Weight Goal Progress</h4>
                       <p className="text-sm text-blue-700 mt-1">
-                        At current pace, you're likely to reach your target weight in 6 weeks
+                        At current pace, you&apos;re likely to reach your target weight in 6 weeks
                       </p>
                     </div>
                     <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">88% confidence</span>
@@ -416,7 +423,7 @@ export default function DigitalTwinPage() {
                       <div
                         key={i}
                         className="w-1 bg-teal-600 rounded-t"
-                        style={{ height: `${70 + Math.random() * 30}%` }}
+                        style={{ height: `${70 + decorativeNoise(i, 4) * 30}%` }}
                       ></div>
                     ))}
                   </div>
@@ -430,7 +437,7 @@ export default function DigitalTwinPage() {
                       <div
                         key={i}
                         className="w-1 bg-blue-600 rounded-t"
-                        style={{ height: `${50 + Math.random() * 50}%` }}
+                        style={{ height: `${50 + decorativeNoise(i, 5) * 50}%` }}
                       ></div>
                     ))}
                   </div>

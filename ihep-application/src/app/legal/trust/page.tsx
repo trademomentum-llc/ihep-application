@@ -33,7 +33,7 @@ export default function TrustStatementPage() {
         </p>
         <p className="text-sm mt-2">
           IHEP is the steward of your information, never the owner. You have complete control over what
-          data you share, who can access it, how it's used, and when to export or delete it.
+          data you share, who can access it, how it&apos;s used, and when to export or delete it.
         </p>
         <p className="text-sm mt-2 font-bold">
           We will never sell your personal health information to third parties. Your data is not a commodity—it
@@ -48,7 +48,7 @@ export default function TrustStatementPage() {
         <li>How AI systems make recommendations that affect your care</li>
         <li>Who has access to your information and under what circumstances</li>
         <li>How we make money and sustain our operations</li>
-        <li>When things go wrong and what we're doing to fix them</li>
+        <li>When things go wrong and what we&apos;re doing to fix them</li>
       </ul>
       <p className="font-semibold mt-2">
         Hidden agendas and obscure practices have no place in healthcare. We commit to plain-language

@@ -26,22 +26,32 @@ interface UserProject {
   compensation_earned: number;
 }
 
+/** Shape returned by /api/research/impact. */
+interface ImpactMetrics {
+  metrics: {
+    total_projects: number;
+    total_participants: number;
+    total_compensation: number;
+    avg_data_quality?: number;
+  };
+  platform_impact: {
+    cure_acceleration_years: number;
+    lives_potentially_impacted?: number;
+    research_papers_enabled?: number;
+    patent_applications?: number;
+  };
+}
+
 export function ResearchDashboard() {
   const { user } = useAuth();
   const [projects, setProjects] = useState<ResearchProject[]>([]);
   const [userProjects, setUserProjects] = useState<UserProject[]>([]);
-  const [impactMetrics, setImpactMetrics] = useState<any>(null);
+  const [impactMetrics, setImpactMetrics] = useState<ImpactMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('available');
 
-  useEffect(() => {
-    if (user) {
-      loadResearchData();
-    }
-  }, [user]);
-
-  const loadResearchData = async () => {
-    setLoading(true);
+  // Initial load: state already starts as loading/no-error.
+  const fetchResearchData = async () => {
     try {
       // Load available projects
       const projectsResponse = await fetch('/api/research/projects');
@@ -73,6 +83,25 @@ export function ResearchDashboard() {
       setLoading(false);
     }
   };
+
+  // User-triggered reload: show the spinner and clear stale errors first.
+  const loadResearchData = async () => {
+    setLoading(true);
+    await fetchResearchData();
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    // Start the fetch from a microtask so no setState runs synchronously in
+    // the effect body (react-hooks/set-state-in-effect).
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) void fetchResearchData();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const enrollInProject = async (projectId: string) => {
     try {
@@ -157,7 +186,7 @@ export function ResearchDashboard() {
         <h3 className="font-semibold mb-2">🌍 Global Impact</h3>
         <p className="text-sm mb-4">
           Your participation helps accelerate cures for life-altering conditions. 
-          Together, we've potentially impacted {impactMetrics?.platform_impact.lives_potentially_impacted?.toLocaleString() || '50,000'}+ lives 
+          Together, we&apos;ve potentially impacted {impactMetrics?.platform_impact.lives_potentially_impacted?.toLocaleString() || '50,000'}+ lives 
           and enabled {impactMetrics?.platform_impact.research_papers_enabled || '15'}+ research papers.
         </p>
         <div className="flex space-x-4 text-xs">

@@ -332,11 +332,11 @@ export default function InvestorLandingPage() {
                   color: varString('--color-slate-600'),
                 }}
               >
-                "The Integrated Health Empowerment Program (IHEP) is an AI-driven digital health
+                &quot;The Integrated Health Empowerment Program (IHEP) is an AI-driven digital health
                 platform transforming aftercare for life-altering conditions. Using patient digital
                 twins, organizational ecosystem mapping, and federated learning, IHEP addresses the
                 $290 billion problem of treatment non-adherence while building the data
-                infrastructure for breakthrough treatments. Founded by Jason Jarmacz."
+                infrastructure for breakthrough treatments. Founded by Jason Jarmacz.&quot;
               </p>
 
               <p style={{ marginBottom: varString('--spacing-16') }}>
@@ -349,7 +349,7 @@ export default function InvestorLandingPage() {
                   color: varString('--color-slate-600'),
                 }}
               >
-                "The Integrated Health Empowerment Program (IHEP) is a morphogenetic digital health
+                &quot;The Integrated Health Empowerment Program (IHEP) is a morphogenetic digital health
                 ecosystem solving the $290 billion annual crisis of treatment non-adherence in
                 life-altering conditions like HIV, cancer, and rare blood diseases. IHEP combines
                 three layers of innovation: patient digital twins that anticipate challenges before
@@ -358,7 +358,7 @@ export default function InvestorLandingPage() {
                 information. Built on Google Cloud with compliance-first NIST SP 800-53r5
                 architecture, IHEP demonstrates measurable outcomes while building the data
                 infrastructure for functional cures. Founded by Jason Jarmacz, Chief Evolution
-                Strategist, IHEP is raising a $3.5M Series Seed to fund Phase I pilot operations."
+                Strategist, IHEP is raising a $3.5M Series Seed to fund Phase I pilot operations.&quot;
               </p>
 
               <h3 style={{ marginTop: varString('--spacing-32') }}>Media Assets</h3>
@@ -393,7 +393,7 @@ export default function InvestorLandingPage() {
                 15+ years in business development and research analytics; 5+ years in healthcare
                 insights. Jason has persevered through multiple hardships pursuing his life goal of
                 developing an application that changes humanity and provides uplift to community.
-                His evolution strategy framework informed IHEP's three-layer architecture. Based in
+                His evolution strategy framework informed IHEP&apos;s three-layer architecture. Based in
                 Newark, New Jersey.
               </p>
 
@@ -431,7 +431,7 @@ export default function InvestorLandingPage() {
                   marginBottom: varString('--spacing-32'),
                 }}
               >
-                We're seeking partnerships across three dimensions: investment, clinical
+                We&apos;re seeking partnerships across three dimensions: investment, clinical
                 collaboration, and technology integration.
               </p>
 
@@ -492,7 +492,7 @@ export default function InvestorLandingPage() {
                 <button type="submit">Subscribe</button>
               </form>
               <p style={{ fontSize: varString('--font-size-sm'), marginTop: varString('--spacing-16') }}>
-                We'll never share your email. Unsubscribe anytime.
+                We&apos;ll never share your email. Unsubscribe anytime.
               </p>
             </div>
           </div>

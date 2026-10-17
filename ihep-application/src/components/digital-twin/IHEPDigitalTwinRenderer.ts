@@ -1,5 +1,3 @@
-// @ts-nocheck
-// TODO: Add proper TypeScript types to this file
 /**
  * IHEP Digital Twin Three.js Rendering Engine
  *
@@ -13,8 +11,42 @@
  * - Level-of-detail (LOD) switching based on visual importance
  */
 
-let THREE;
-let OrbitControls;
+type ThreeModule = typeof import('three');
+type OrbitControlsCtor = typeof import('three/examples/jsm/controls/OrbitControls.js').OrbitControls;
+type OrbitControls = InstanceType<OrbitControlsCtor>;
+
+// three.js is loaded lazily (client-only). The type-only namespace below lets
+// annotations like `THREE.Mesh` resolve while the value is assigned at runtime.
+let THREE: ThreeModule;
+// eslint-disable-next-line @typescript-eslint/no-namespace
+declare namespace THREE {
+    type AmbientLight = import('three').AmbientLight;
+    type AxesHelper = import('three').AxesHelper;
+    type BufferGeometry = import('three').BufferGeometry;
+    type CanvasTexture = import('three').CanvasTexture;
+    type CapsuleGeometry = import('three').CapsuleGeometry;
+    type Color = import('three').Color;
+    type DirectionalLight = import('three').DirectionalLight;
+    type GridHelper = import('three').GridHelper;
+    type Group = import('three').Group;
+    type HemisphereLight = import('three').HemisphereLight;
+    type Line = import('three').Line;
+    type LineBasicMaterial = import('three').LineBasicMaterial;
+    type Mesh<
+        TGeometry extends import('three').BufferGeometry = import('three').BufferGeometry,
+        TMaterial extends import('three').Material | import('three').Material[] = import('three').Material | import('three').Material[],
+    > = import('three').Mesh<TGeometry, TMaterial>;
+    type MeshStandardMaterial = import('three').MeshStandardMaterial;
+    type Object3D = import('three').Object3D;
+    type PerspectiveCamera = import('three').PerspectiveCamera;
+    type Scene = import('three').Scene;
+    type SphereGeometry = import('three').SphereGeometry;
+    type Sprite = import('three').Sprite;
+    type SpriteMaterial = import('three').SpriteMaterial;
+    type Vector3 = import('three').Vector3;
+    type WebGLRenderer = import('three').WebGLRenderer;
+}
+let OrbitControls: OrbitControlsCtor;
 
 const loadThreeDependencies = async () => {
     if (THREE && OrbitControls) return;
@@ -25,11 +57,14 @@ const loadThreeDependencies = async () => {
     ]);
 
     THREE = threeModule;
-    OrbitControls = controlsModule.OrbitControls;
+    OrbitControls = controlsModule.OrbitControls as unknown as OrbitControlsCtor;
 };
 // USDZ loader temporarily disabled - causing initialization errors
 // import { USDZLoader } from 'three-usdz-loader';
-type USDZLoader = any;
+type USDZLoader = unknown;
+
+/** The per-twin biometric indicator created in createPatientTwin(). */
+type IndicatorSphere = THREE.Mesh<THREE.SphereGeometry, THREE.MeshStandardMaterial>;
 
 // Type definitions
 export interface RendererOptions {
@@ -697,7 +732,7 @@ class IHEPDigitalTwinRenderer {
             // Find biometric indicator sphere
             const sphere = twinGroup.children.find(
                 child => child.name === 'IndicatorSphere'
-            );
+            ) as IndicatorSphere | undefined;
             
             if (sphere && sphere.userData.timeSamples) {
                 const samples = sphere.userData.timeSamples;
@@ -811,6 +846,10 @@ class IHEPDigitalTwinRenderer {
      * 9. Log events
      */
     morphogeneticTick() {
+        const fields = this.morphoFields;
+        const agents = this.morphoAgents;
+        if (!fields || !agents) return; // morphogenetics disabled / not initialised
+
         // Step 1: Measure raw signals
         const frameLatencies = this.morphoMetrics.frameLatency;
         const avgLatency = frameLatencies.length > 0 
@@ -836,9 +875,9 @@ class IHEPDigitalTwinRenderer {
         const k_inject_E = 1.0;
         const k_inject_S = 0.6;
         
-        this.morphoFields.L += k_inject_L * L;
-        this.morphoFields.E += k_inject_E * E;
-        this.morphoFields.S += k_inject_S * S;
+        fields.L += k_inject_L * L;
+        fields.E += k_inject_E * E;
+        fields.S += k_inject_S * S;
         
         // Step 4: Diffusion (simplified for single-component system)
         // In multi-component system, signals would spread across scene graph
@@ -849,18 +888,18 @@ class IHEPDigitalTwinRenderer {
         const lambda_S = 0.03;
         const dt = 1.0; // 1 second tick
         
-        this.morphoFields.L *= Math.exp(-lambda_L * dt);
-        this.morphoFields.E *= Math.exp(-lambda_E * dt);
-        this.morphoFields.S *= Math.exp(-lambda_S * dt);
+        fields.L *= Math.exp(-lambda_L * dt);
+        fields.E *= Math.exp(-lambda_E * dt);
+        fields.S *= Math.exp(-lambda_S * dt);
         
         // Step 6: Detect threshold crossings
         const theta_L_hot = 0.35; // From your spec
         const theta_E_hot = 0.020;
         const theta_S_high = 0.70;
         
-        const L_hot = this.morphoFields.L > theta_L_hot;
-        const E_hot = this.morphoFields.E > theta_E_hot;
-        const S_high = this.morphoFields.S > theta_S_high;
+        const L_hot = fields.L > theta_L_hot;
+        const E_hot = fields.E > theta_E_hot;
+        const S_high = fields.S > theta_S_high;
         
         // Step 7: Quorum voting
         const w_E = 0.5;
@@ -876,33 +915,33 @@ class IHEPDigitalTwinRenderer {
         // Step 8: Execute agent actions
         
         // Weaver: Reduce quality if latency high
-        if (this.morphoAgents.weaver.cooldown === 0) {
+        if (agents.weaver.cooldown === 0) {
             if (L_hot && this.currentLODLevel < 3) {
                 this.reduceLODLevel();
-                this.morphoAgents.weaver.cooldown = 10; // 10 second cooldown
+                agents.weaver.cooldown = 10; // 10 second cooldown
                 console.log('Morpho: Weaver reduced LOD level');
             }
         } else {
-            this.morphoAgents.weaver.cooldown--;
+            agents.weaver.cooldown--;
         }
         
         // Builder: Increase quality if capacity available
-        if (this.morphoAgents.builder.cooldown === 0) {
+        if (agents.builder.cooldown === 0) {
             if (!L_hot && S_high && this.currentLODLevel > 0) {
                 this.increaseLODLevel();
-                this.morphoAgents.builder.cooldown = 10;
+                agents.builder.cooldown = 10;
                 console.log('Morpho: Builder increased LOD level');
             }
         } else {
-            this.morphoAgents.builder.cooldown--;
+            agents.builder.cooldown--;
         }
         
         // Step 9: Log event
         if (L_hot || E_hot) {
             console.log('Morpho tick:', {
-                L: this.morphoFields.L.toFixed(3),
-                E: this.morphoFields.E.toFixed(3),
-                S: this.morphoFields.S.toFixed(3),
+                L: fields.L.toFixed(3),
+                E: fields.E.toFixed(3),
+                S: fields.S.toFixed(3),
                 LOD: this.currentLODLevel,
                 quorum: quorum.toFixed(2)
             });
@@ -928,7 +967,7 @@ class IHEPDigitalTwinRenderer {
                 this.patientTwins.forEach((group) => {
                     const sphere = group.children.find(
                         c => c.name === 'IndicatorSphere'
-                    );
+                    ) as IndicatorSphere | undefined;
                     if (sphere) {
                         // Replace with lower-poly sphere
                         const newGeom = new THREE.SphereGeometry(
@@ -977,7 +1016,7 @@ class IHEPDigitalTwinRenderer {
                 this.patientTwins.forEach((group) => {
                     const sphere = group.children.find(
                         c => c.name === 'IndicatorSphere'
-                    );
+                    ) as IndicatorSphere | undefined;
                     if (sphere) {
                         const newGeom = new THREE.SphereGeometry(
                             sphere.geometry.parameters.radius,
@@ -996,7 +1035,7 @@ class IHEPDigitalTwinRenderer {
      * 
      * @param {number} latency - Frame render time in milliseconds
      */
-    updateMorphogeneticMetrics(latency) {
+    updateMorphogeneticMetrics(latency: number) {
         // Add to frame latency buffer (sliding window of last 10 frames)
         this.morphoMetrics.frameLatency.push(latency);
         if (this.morphoMetrics.frameLatency.length > 10) {
@@ -1028,7 +1067,7 @@ class IHEPDigitalTwinRenderer {
      * 
      * @param {number} speed - Days per second of real time
      */
-    setAnimationSpeed(speed) {
+    setAnimationSpeed(speed: number) {
         this.animationSpeed = speed;
         console.log(`Animation speed set to ${speed} days/second`);
     }
@@ -1038,7 +1077,7 @@ class IHEPDigitalTwinRenderer {
      * 
      * @param {number} time - Time in days
      */
-    setCurrentTime(time) {
+    setCurrentTime(time: number) {
         this.currentTime = time;
         this.updatePatientTwinsForTime(time);
         console.log(`Jumped to day ${time}`);
@@ -1050,7 +1089,7 @@ class IHEPDigitalTwinRenderer {
      * @param {string} patientId - Patient identifier
      * @returns {Object} Patient data snapshot
      */
-    getPatientDataAtCurrentTime(patientId) {
+    getPatientDataAtCurrentTime(patientId: string) {
         const twin = this.patientTwins.get(patientId);
         if (!twin) {
             return null;
@@ -1058,7 +1097,7 @@ class IHEPDigitalTwinRenderer {
         
         const sphere = twin.children.find(
             c => c.name === 'IndicatorSphere'
-        );
+        ) as IndicatorSphere | undefined;
         
         if (sphere && sphere.userData.timeSamples) {
             // Find closest time sample
@@ -1172,7 +1211,7 @@ class IHEPDigitalTwinRenderer {
      * @param {number} t - Input in [0, 1]
      * @returns {number} Smoothed output in [0, 1]
      */
-    easeInOutCubic(t) {
+    easeInOutCubic(t: number): number {
         return t < 0.5 
             ? 4 * t * t * t 
             : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -1195,13 +1234,14 @@ class IHEPDigitalTwinRenderer {
         }
 
         // Dispose all geometries and materials
-        this.scene.traverse((object) => {
+        this.scene.traverse((node) => {
+            const object = node as Partial<Pick<THREE.Mesh, 'geometry' | 'material'>>;
             if (object.geometry) {
                 object.geometry.dispose();
             }
             if (object.material) {
                 if (Array.isArray(object.material)) {
-                    object.material.forEach(material => material.dispose());
+                    object.material.forEach((material) => material.dispose());
                 } else {
                     object.material.dispose();
                 }
