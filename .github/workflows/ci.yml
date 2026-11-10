@@ -158,6 +158,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint, test, build, security, validate-crypto]
     if: always()
+    # No checkout in this job, so the workflow-level working-directory
+    # (./ihep-application) does not exist here.
+    defaults:
+      run:
+        working-directory: .
     steps:
       - name: Check job statuses
         run: |
