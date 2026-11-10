@@ -45,3 +45,16 @@ jobs:
         uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           category: "/language:${{matrix.language}}"
+          # Analyze locally; do not fail this job if GitHub code scanning
+          # upload is unavailable (Code Security is not enabled for this
+          # repo and CodeQL default setup is configured, which rejects
+          # advanced-configuration SARIF).
+          upload: never
+          output: ${{ runner.temp }}/codeql-sarif
+
+      - name: Upload CodeQL SARIF if code scanning is available
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        continue-on-error: true
+        with:
+          sarif_file: ${{ runner.temp }}/codeql-sarif
+          category: "/language:${{matrix.language}}"
