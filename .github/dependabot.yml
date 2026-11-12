@@ -57,3 +57,17 @@ updates:
       - "dependencies"
       - "github-actions"
     rebase-strategy: "auto"
+
+  # Pip: cover repo-root manifests; version updates disabled. Exclude inert W&B snapshots.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    exclude-paths:
+      - "ihep-application/ml/training/datasets/wandb/run-20251219_022421-t73r93c0/files"
+      - "ihep-application/ml/training/datasets/wandb/run-20251219_022713-zihn9yb0/files"
+      - "ihep-application/ml/training/datasets/wandb/run-20251219_024650-00mohagz/files"
+      - "training_datasets/wandb/run-20251219_022421-t73r93c0/files"
+      - "training_datasets/wandb/run-20251219_022713-zihn9yb0/files"
+      - "training_datasets/wandb/run-20251219_024650-00mohagz/files"
+    open-pull-requests-limit: 0
