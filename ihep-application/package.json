@@ -35,7 +35,13 @@
     },
     "preact": "10.28.2",
     "hono": "^4.11.7",
-    "@hono/node-server": "^1.19.6"
+    "@hono/node-server": "^1.19.6",
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "11.0.1"
+    },
+    "@tailwindcss/typography": {
+      "postcss-selector-parser": "^6.1.5"
+    }
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
