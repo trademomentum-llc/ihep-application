@@ -76,7 +76,7 @@ bandit==1.8.0
 torch>=2.8.0  # Pinned for CVE-2025-32434 (RCE), CVE-2024-31580 (heap overflow), CVE-2024-31583 (use-after-free)
 transformers>=5.22.2  # Pinned for CVE-2024-11392/11393/11394 (deserialization RCE) and ReDoS fixes
 datasets>=2.16.0
-accelerate>=0.25.0
+accelerate>=1.15.0
 peft>=0.7.0
 bitsandbytes>=0.41.0
 wandb>=0.16.0
