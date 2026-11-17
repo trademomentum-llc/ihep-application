@@ -2,8 +2,8 @@
 # HIPAA-compliant production requirements
 
 # Flask Web Framework
-Flask==3.1.2
-Werkzeug>=3.1.5,<4.0.0
+Flask==3.1.3
+Werkzeug>=3.1.9,<4.0.0
 
 # WSGI Server for Production
 gunicorn==23.0.0
@@ -32,7 +32,7 @@ google-cloud-secret-manager==2.25.0
 # Security & Cryptography
 cryptography==50.0.2
 bcrypt==4.2.1
-filelock>=3.20.3  # Pinned for CVE-2025-68146 + CVE-2026-22701 fix (TOCTOU symlink vulnerability)
+filelock>=4.2.11  # Pinned for CVE-2025-68146 + CVE-2026-22701 fix (TOCTOU symlink vulnerability)
 
 # HTTP Requests
 requests==2.32.5
@@ -74,7 +74,7 @@ bandit==1.8.0
 safety==3.2.11
 
 # ML Training Dependencies (for MedGemma fine-tuning)
-torch>=2.8.0  # Pinned for CVE-2025-32434 (RCE), CVE-2024-31580 (heap overflow), CVE-2024-31583 (use-after-free)
+torch>=2.15.0  # Pinned for CVE-2025-32434 (RCE), CVE-2024-31580 (heap overflow), CVE-2024-31583 (use-after-free)
 transformers>=4.53.0  # Pinned for CVE-2024-11392/11393/11394 (deserialization RCE) and ReDoS fixes
 datasets>=2.16.0
 accelerate>=1.16.0
