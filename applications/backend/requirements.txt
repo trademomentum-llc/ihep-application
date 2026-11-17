@@ -3,7 +3,7 @@
 
 # Flask Web Framework
 Flask==3.1.2
-Werkzeug>=3.1.5,<4.0.0
+Werkzeug>=3.1.9,<4.0.0
 
 # WSGI Server for Production
 gunicorn==23.0.0
@@ -32,7 +32,7 @@ google-cloud-secret-manager==2.25.0
 # Security & Cryptography
 cryptography==50.0.2
 bcrypt==4.2.1
-filelock>=3.20.3  # Pinned for CVE-2025-68146 + CVE-2026-22701 fix (TOCTOU symlink vulnerability)
+filelock>=4.2.11  # Pinned for CVE-2025-68146 + CVE-2026-22701 fix (TOCTOU symlink vulnerability)
 
 # HTTP Requests
 requests==2.32.5
