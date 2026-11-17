@@ -145,3 +145,5 @@ secret.yml
 /training/transformers/
 /training/trl/
 openusd/
+
+**/wandb/
