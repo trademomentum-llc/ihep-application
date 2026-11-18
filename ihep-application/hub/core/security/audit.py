@@ -4,11 +4,21 @@ Logs all PHI access and security events to Google Cloud Logging
 """
 
 import os
+import re
 import logging
 from typing import Dict, Any, Optional
 from datetime import datetime
 from google.cloud import logging as cloud_logging
 from flask import request
+
+
+_CONTROL_CHARS = re.compile(r"[\x00-\x1f\x7f]")
+
+
+def _sanitize_log_value(value: Any, max_len: int = 64) -> str:
+    """Strip CR/LF and other control characters so a value cannot forge log lines."""
+    text = str(value).replace("\r", "").replace("\n", "")
+    return _CONTROL_CHARS.sub("", text)[:max_len]
 
 
 class AuditLogger:
@@ -61,5 +71,12 @@ class AuditLogger:
         # Log to Cloud Logging
         self.logger.log_struct(log_entry, severity='INFO')
         
-        # Also log locally for development
-        self.local_logger.info(f"AUDIT: {action} on {resource} by {user_id} - {outcome}")
+        # Also log locally for development. The full record (including the
+        # user and resource identifiers) lives only in the Cloud Logging audit
+        # trail above; the local log line carries no identifiers, only the
+        # sanitized action and outcome.
+        self.local_logger.info(
+            "AUDIT: action=%s outcome=%s (identifiers recorded in ihep-audit-log only)",
+            _sanitize_log_value(action),
+            _sanitize_log_value(outcome),
+        )
