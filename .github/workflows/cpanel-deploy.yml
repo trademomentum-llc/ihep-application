@@ -21,6 +21,10 @@ env:
   NODE_VERSION: '22'
   DEPLOY_PATH: '/home/ihepapp/public_html'
 
+# Least privilege: every job only needs to read the repository.
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Deploy to cPanel Hosting

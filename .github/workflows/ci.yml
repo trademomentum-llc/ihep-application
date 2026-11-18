@@ -12,6 +12,10 @@ on:
       - "ihep-application/**"
       - ".github/workflows/ci.yml"
 
+# Least privilege: every job only needs to read the repository.
+permissions:
+  contents: read
+
 defaults:
   run:
     working-directory: ./ihep-application
