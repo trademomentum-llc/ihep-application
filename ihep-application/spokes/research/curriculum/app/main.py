@@ -21,7 +21,6 @@ import time
 from app.core.config import settings
 from app.core.exceptions import IHEPException
 from app.db.session import engine, Base
-from app.api.v1 import auth, users, modules, assessments, competencies, gamification
 
 # Configure logging
 logging.basicConfig(
@@ -150,13 +149,8 @@ async def root():
     }
 
 
-# Include routers
-app.include_router(auth.router, prefix="/api/v1", tags=["authentication"])
-app.include_router(users.router, prefix="/api/v1", tags=["users"])
-app.include_router(modules.router, prefix="/api/v1", tags=["curriculum"])
-app.include_router(assessments.router, prefix="/api/v1", tags=["assessments"])
-app.include_router(competencies.router, prefix="/api/v1", tags=["competencies"])
-app.include_router(gamification.router, prefix="/api/v1", tags=["gamification"])
+# API routers (auth, users, modules, assessments, competencies, gamification)
+# are not in the repository yet; include them here once app/api/v1 exists.
 
 
 if __name__ == "__main__":
