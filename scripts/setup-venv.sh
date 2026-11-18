@@ -44,7 +44,6 @@ echo "Installing dependencies..."
 
 REQUIREMENTS_FILES=(
     "applications/backend/requirements.txt"
-    "curriculum-backend/requirements.txt"
     "services/chat-api/requirements.txt"
     "services/health-api/requirements.txt"
 )
