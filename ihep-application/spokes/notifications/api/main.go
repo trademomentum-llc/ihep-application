@@ -8,6 +8,7 @@ import (
     "log"
     "net/http"
     "os"
+    "strings"
     "time"
 
     "github.com/aws/aws-sdk-go/aws"
@@ -191,7 +192,7 @@ func (s *NotificationService) sendNotification(req NotificationRequest) (*Notifi
         }
 
         if err != nil {
-            log.Printf("Failed to send %s to recipient %s: %v", req.Type, recipient.UserID, err)
+            log.Printf("Failed to send %s to recipient %s: %s", sanitizeLog(string(req.Type)), sanitizeLog(recipient.UserID), sanitizeLog(err.Error()))
             response.FailedRecipients = append(response.FailedRecipients, recipient.UserID)
             response.Success = false
         } else {
@@ -242,4 +243,17 @@ func main() {
 
     log.Printf("Notification Service starting on port %s", port)
     log.Fatal(http.ListenAndServe(":"+port, r))
+}
+
+// sanitizeLog neutralizes CR/LF and other control characters in untrusted
+// values so they cannot forge or split log entries.
+func sanitizeLog(s string) string {
+    s = strings.ReplaceAll(s, "\r", "\\r")
+    s = strings.ReplaceAll(s, "\n", "\\n")
+    return strings.Map(func(r rune) rune {
+        if r < 0x20 || r == 0x7f {
+            return '?'
+        }
+        return r
+    }, s)
 }
