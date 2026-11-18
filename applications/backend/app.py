@@ -4,6 +4,7 @@ Production-ready Flask application with comprehensive security controls
 """
 import os
 import logging
+import re
 import time
 import json
 import redis
@@ -29,6 +30,15 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+_LOG_CONTROL_CHARS = re.compile(r"[\x00-\x1f\x7f]")
+
+
+def _log_safe(value) -> str:
+    """Neutralize CR/LF and other control characters in untrusted values before logging."""
+    text = str(value).replace("\r", "\\r").replace("\n", "\\n")
+    return _LOG_CONTROL_CHARS.sub("?", text)
+
 
 # Initialize Google Cloud Logging for HIPAA audit trail
 try:
@@ -94,8 +104,9 @@ def audit_log(action: str):
 
             # Log access attempt
             logger.info(
-                f"AUDIT: action={action} ip={user_ip} user_agent={user_agent} "
-                f"request_id={request_id} endpoint={request.endpoint}"
+                f"AUDIT: action={_log_safe(action)} ip={_log_safe(user_ip)} "
+                f"user_agent={_log_safe(user_agent)} "
+                f"request_id={request_id} endpoint={_log_safe(request.endpoint)}"
             )
 
             g.request_id = request_id
@@ -197,7 +208,7 @@ def handle_validation_error(e):
 @app.errorhandler(429)
 def handle_rate_limit(e):
     """Handle rate limit exceeded"""
-    logger.warning(f"Rate limit exceeded: {request.remote_addr}")
+    logger.warning(f"Rate limit exceeded: {_log_safe(request.remote_addr)}")
     return jsonify({
         "error": "Rate limit exceeded. Please try again later."
     }), 429

@@ -18,6 +18,7 @@ import os
 import jwt
 from functools import wraps
 import logging
+import re
 from google.cloud import logging as cloud_logging
 from google.cloud import bigquery
 from datetime import datetime, timedelta
@@ -33,6 +34,15 @@ CORS(app, origins=os.getenv('ALLOWED_ORIGINS', '*').split(','))
 logging_client = cloud_logging.Client()
 logging_client.setup_logging()
 logger = logging.getLogger(__name__)
+
+_LOG_CONTROL_CHARS = re.compile(r"[\x00-\x1f\x7f]")
+
+
+def _log_safe(value) -> str:
+    """Neutralize CR/LF and other control characters in untrusted values before logging."""
+    text = str(value).replace("\r", "\\r").replace("\n", "\\n")
+    return _LOG_CONTROL_CHARS.sub("?", text)
+
 
 # Redis for caching
 redis_client = redis.Redis(
@@ -154,7 +164,7 @@ class EconomicModel:
                 base_value = weight * engagement_level * quality_multiplier * decay_factor
                 total_value += base_value
                 
-                logger.info(f"Engagement value for {user_id}: {engagement_type} = {base_value}")
+                logger.info(f"Engagement value for {_log_safe(user_id)}: {_log_safe(engagement_type)} = {base_value}")
         
         return total_value
 
@@ -415,7 +425,7 @@ def redeem_reward():
         table_id = f"{PROJECT_ID}.ihep_finance.reward_redemptions"
         bq_client.insert_rows_json(table_id, [redemption])
         
-        logger.info(f"Reward redeemed by user {request.user_id}: {reward_id}")
+        logger.info(f"Reward redeemed by user {_log_safe(request.user_id)}: {_log_safe(reward_id)}")
         
         return jsonify({
             'message': 'Reward successfully redeemed',

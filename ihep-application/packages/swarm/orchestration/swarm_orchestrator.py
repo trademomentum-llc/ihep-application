@@ -7,6 +7,7 @@ Author: Jason M Jarmacz | jason@ihep.app
 Co-Author: Claude by Anthropic
 """
 
+import secrets
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 from loguru import logger
@@ -313,12 +314,21 @@ class SwarmOrchestrator:
                         "result": result,
                         "agent": agent.name,
                     })
-                except Exception as e:
-                    logger.error(f"Task execution failed: {e}")
+                except Exception:
+                    # Full details (including the traceback) stay in the
+                    # server-side log; API clients only get a generic message
+                    # plus a reference they can quote to correlate the log entry.
+                    error_ref = secrets.token_hex(6)
+                    logger.exception(
+                        "Task execution failed (task_id={}, error_ref={})",
+                        task.id,
+                        error_ref,
+                    )
                     results.append({
                         "task_id": task.id,
                         "success": False,
-                        "error": str(e),
+                        "error": "Task execution failed",
+                        "error_ref": error_ref,
                         "agent": agent.name,
                     })
 

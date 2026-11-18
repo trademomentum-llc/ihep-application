@@ -27,6 +27,7 @@ import hashlib
 import hmac
 import base64
 import logging
+import re
 
 # Import core services (in production, use proper module imports)
 # from services.financial_twin_service import (
@@ -49,6 +50,15 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
 logger = logging.getLogger("financial-twin-api")
+
+_LOG_CONTROL_CHARS = re.compile(r"[\x00-\x1f\x7f]")
+
+
+def _log_safe(value) -> str:
+    """Neutralize CR/LF and other control characters in untrusted values before logging."""
+    text = str(value).replace("\r", "\\r").replace("\n", "\\n")
+    return _LOG_CONTROL_CHARS.sub("?", text)
+
 
 
 # ============================================================================
@@ -124,10 +134,10 @@ def audit_log(action: str):
                     "timestamp": datetime.utcnow().isoformat() + "Z",
                     "user_id": str(getattr(g, "participant_id", "anonymous")),
                     "action": action,
-                    "resource": request.path,
-                    "method": request.method,
-                    "ip_address": request.remote_addr,
-                    "user_agent": request.headers.get("User-Agent", "unknown")
+                    "resource": _log_safe(request.path),
+                    "method": _log_safe(request.method),
+                    "ip_address": _log_safe(request.remote_addr),
+                    "user_agent": _log_safe(request.headers.get("User-Agent", "unknown"))
                 }
                 logger.info(f"AUDIT: {json.dumps(log_entry)}")
             
