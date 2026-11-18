@@ -254,7 +254,9 @@ Output should include infrastructure configs, deployment scripts, and monitoring
             logger.error(f"{self.name} task execution failed: {e}")
             casrep = self.report_casrep(e, task)
             self.fail_task(str(e))
-            return {"error": str(e), "casrep": casrep.id}
+            # Exception details stay in the server log and the CASREP record;
+            # the returned payload (which can reach API clients) stays generic.
+            return {"error": "Task execution failed", "casrep": casrep.id}
 
     def _execute_code_task(self, prompt: str, task: Task) -> Dict[str, Any]:
         """Execute code generation task"""

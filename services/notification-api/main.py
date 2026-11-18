@@ -18,6 +18,7 @@ import os
 import jwt
 from functools import wraps
 import logging
+import re
 from google.cloud import logging as cloud_logging
 from google.cloud import pubsub_v1
 import json
@@ -34,6 +35,15 @@ CORS(app, origins=os.getenv('ALLOWED_ORIGINS', '*').split(','))
 logging_client = cloud_logging.Client()
 logging_client.setup_logging()
 logger = logging.getLogger(__name__)
+
+_LOG_CONTROL_CHARS = re.compile(r"[\x00-\x1f\x7f]")
+
+
+def _log_safe(value) -> str:
+    """Neutralize CR/LF and other control characters in untrusted values before logging."""
+    text = str(value).replace("\r", "\\r").replace("\n", "\\n")
+    return _LOG_CONTROL_CHARS.sub("?", text)
+
 
 # Redis for queue management
 redis_client = redis.Redis(
@@ -117,7 +127,7 @@ class NotificationService:
         # Check if user has enabled this channel
         channel_enabled = preferences.get(f"{channel}_enabled", "true") == "true"
         if not channel_enabled:
-            logger.info(f"Notification channel {channel} disabled for user {user_id}")
+            logger.info(f"Notification channel {_log_safe(channel)} disabled for user {_log_safe(user_id)}")
             return False
         
         # Check delivery time preferences
@@ -138,10 +148,10 @@ class NotificationService:
                 success = self._send_push(notification_data)
             
             if success:
-                logger.info(f"Notification sent successfully to user {user_id} via {channel}")
+                logger.info(f"Notification sent successfully to user {_log_safe(user_id)} via {_log_safe(channel)}")
                 return True
             else:
-                logger.warning(f"Failed to send notification to user {user_id} via {channel}")
+                logger.warning(f"Failed to send notification to user {_log_safe(user_id)} via {_log_safe(channel)}")
                 
         except Exception as e:
             logger.error(f"Error sending notification: {str(e)}")
@@ -267,7 +277,7 @@ class NotificationService:
         priority = notification_data.get('priority', 'medium')
         queue_key = f"notification_queue:{priority}"
         redis_client.lpush(queue_key, json.dumps(notification_data))
-        logger.info(f"Notification queued for user {notification_data['user_id']} with priority {priority}")
+        logger.info(f"Notification queued for user {_log_safe(notification_data['user_id'])} with priority {_log_safe(priority)}")
     
     def _handle_delivery_failure(self, notification_data):
         """Handle notification delivery failure with retry logic"""

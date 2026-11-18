@@ -28,6 +28,7 @@ from psycopg2.extras import RealDictCursor
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 import logging
+import re
 from google.cloud import secretmanager
 from google.cloud import logging as cloud_logging
 from typing import Any
@@ -40,6 +41,15 @@ CORS(app, origins=os.getenv('ALLOWED_ORIGINS', '*').split(','))
 logging_client = cloud_logging.Client()
 logging_client.setup_logging()
 logger = logging.getLogger(__name__)
+
+_LOG_CONTROL_CHARS = re.compile(r"[\x00-\x1f\x7f]")
+
+
+def _log_safe(value) -> str:
+    """Neutralize CR/LF and other control characters in untrusted values before logging."""
+    text = str(value).replace("\r", "\\r").replace("\n", "\\n")
+    return _LOG_CONTROL_CHARS.sub("?", text)
+
 
 AUTH_LOG_REDACTION_SALT = os.getenv('AUTH_LOG_REDACTION_SALT', os.getenv('AUDIT_LOG_REDACTION_SALT', ''))
 
@@ -193,7 +203,7 @@ def rate_limit(max_requests=5, window_seconds=3600):
                 logger.warning(
                     "Rate limit exceeded: identifier_hash=%s masked_origin=%s endpoint=%s",
                     identifier_hash,
-                    _masked_identifier(identifier),
+                    _log_safe(_masked_identifier(identifier)),
                     f.__name__,
                 )
                 return jsonify({
