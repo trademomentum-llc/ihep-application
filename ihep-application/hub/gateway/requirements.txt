@@ -3,7 +3,7 @@
 
 # Flask Web Framework
 Flask==3.1.3
-Werkzeug>=3.1.9,<4.0.0
+Werkzeug~=3.1.9  # single-bound form so osv-scanner reads 3.1.9 (comma ranges are misread); lowest OSV-clean 3.1.x
 
 # WSGI Server for Production
 gunicorn==23.0.0
@@ -36,7 +36,7 @@ filelock==4.2.1  # Patched CVE-2026-22701 and later filelock advisories
 
 # HTTP Requests
 requests==2.33.0
-urllib3>=2.6.3  # Pinned for CVE-2025-66418 (decompression chain DoS), CVE-2025-66471 (streaming DoS), CVE-2026-21441 (redirect bypass)
+urllib3>=2.8.0  # Lowest release with no OSV advisories (2.6.3: GHSA-8988-9cw3-xx77, GHSA-gh4c-6fx4-qh6g, GHSA-mf9v-mfxr-j63j, GHSA-qccp-gfcp-xxvc, GHSA-vxq7-64xx-v4gw)
 
 # Data Validation & Serialization
 marshmallow>=4.1.2  # Pinned for CVE-2025-68480 fix (DoS in Schema.load)
@@ -73,9 +73,9 @@ pylint==4.0.9
 bandit==1.8.0
 
 # ML Training Dependencies (for MedGemma fine-tuning)
-torch>=2.8.0  # Pinned for CVE-2025-32434 (RCE), CVE-2024-31580 (heap overflow), CVE-2024-31583 (use-after-free)
+torch>=2.13.0  # Lowest release with no OSV advisories (2.8.0: GHSA-63cw-57p8-fm3p, GHSA-qfhq-4f3w-5fph, GHSA-rrmf-rvhw-rf47, GHSA-vgrw-7cvw-pwgx, PYSEC-2025-203/204/206, PYSEC-2026-139)
 transformers>=5.22.2  # Pinned for CVE-2024-11392/11393/11394 (deserialization RCE) and ReDoS fixes
-datasets>=2.16.0
+datasets>=5.0.1
 accelerate>=1.16.0
 peft>=0.7.0
 bitsandbytes>=0.41.0
