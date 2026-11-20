@@ -32,7 +32,7 @@ google-cloud-secret-manager==2.25.0
 # Security & Cryptography
 cryptography==50.0.2
 bcrypt==4.2.1
-filelock>=3.20.3  # Pinned for CVE-2025-68146 + CVE-2026-22701 fix (TOCTOU symlink vulnerability)
+filelock>=4.2.1  # Lowest OSV-clean release (matches hub/gateway)
 
 # HTTP Requests
 requests==2.33.0
@@ -74,8 +74,8 @@ bandit==1.8.0
 
 # ML Training Dependencies (for MedGemma fine-tuning)
 torch>=2.13.0  # Lowest release with no OSV advisories (2.8.0: GHSA-63cw-57p8-fm3p, GHSA-qfhq-4f3w-5fph, GHSA-rrmf-rvhw-rf47, GHSA-vgrw-7cvw-pwgx, PYSEC-2025-203/204/206, PYSEC-2026-139)
-transformers>=4.53.0  # Pinned for CVE-2024-11392/11393/11394 (deserialization RCE) and ReDoS fixes
-datasets>=2.16.0
+transformers>=5.10.1  # Lowest OSV-clean release (4.53.0 had 13 scan-pr findings)
+datasets>=5.0.1
 accelerate>=1.16.0
 peft>=0.7.0
 bitsandbytes>=0.41.0

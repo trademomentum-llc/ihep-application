@@ -75,7 +75,7 @@ bandit==1.8.0
 # ML Training Dependencies (for MedGemma fine-tuning)
 torch>=2.13.0  # Lowest release with no OSV advisories (2.8.0: GHSA-63cw-57p8-fm3p, GHSA-qfhq-4f3w-5fph, GHSA-rrmf-rvhw-rf47, GHSA-vgrw-7cvw-pwgx, PYSEC-2025-203/204/206, PYSEC-2026-139)
 transformers>=5.22.2  # Pinned for CVE-2024-11392/11393/11394 (deserialization RCE) and ReDoS fixes
-datasets>=2.16.0
+datasets>=5.0.1
 accelerate>=1.16.0
 peft>=0.7.0
 bitsandbytes>=0.41.0
