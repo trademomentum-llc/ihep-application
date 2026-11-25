@@ -19,11 +19,11 @@ psycopg2-binary>=2.9.10
 loguru>=0.7.0
 
 # Environment
-python-dotenv>=1.0.0
+python-dotenv>=1.2.2
 
 # Async Support
 asyncio-mqtt>=0.16.0
-aiohttp>=3.13.3  # Addresses recent directory traversal/DoS/CSS issues
+aiohttp>=3.14.4  # Lowest release with no OSV advisories (3.13.3 had 41 scan-pr findings)
 
 # UUID Generation
 uuid>=1.30
